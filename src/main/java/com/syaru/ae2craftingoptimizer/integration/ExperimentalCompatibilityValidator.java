@@ -14,6 +14,7 @@ import com.syaru.ae2craftingoptimizer.access.CraftingTaskProgressAccess;
 import com.syaru.ae2craftingoptimizer.access.ExactBigIntegerInventoryHookAccess;
 import com.syaru.ae2craftingoptimizer.access.ExactCraftingInventoryAccess;
 import com.syaru.ae2craftingoptimizer.access.MekanismCachedRecipeAccess;
+import com.syaru.ae2craftingoptimizer.access.NetworkStorageMountsAccess;
 import com.syaru.ae2craftingoptimizer.access.PatternProviderTransactionAccess;
 import com.syaru.ae2craftingoptimizer.api.batch.v2.BatchSourceReceiptStore;
 import com.syaru.ae2craftingoptimizer.api.batch.v2.NativeBatchReceiptStore;
@@ -63,15 +64,11 @@ public final class ExperimentalCompatibilityValidator {
             require(failures, "appeng.crafting.inv.CraftingSimulationState",
                     CheckedCraftingArithmeticHookAccess.class);
         }
-        // BigInteger在庫は集計・複製・Sidecar破棄・Cache失効の四境界を一組として監査する。
+        // BigInteger在庫はPlanner専用mount列挙と一時KeyCounterのSidecar破棄だけを監査する。
         if (ACOConfig.enableExactBigIntegerInventorySnapshots()) {
             require(failures, "appeng.me.storage.NetworkStorage",
-                    ExactBigIntegerInventoryHookAccess.class);
-            require(failures, "appeng.crafting.inv.NetworkCraftingSimulationState",
-                    ExactBigIntegerInventoryHookAccess.class);
+                    NetworkStorageMountsAccess.class);
             require(failures, "appeng.api.stacks.KeyCounter",
-                    ExactBigIntegerInventoryHookAccess.class);
-            require(failures, "appeng.me.service.StorageService",
                     ExactBigIntegerInventoryHookAccess.class);
         }
         if ((ACOConfig.enableTransactionalBatchingV2()
@@ -84,11 +81,6 @@ public final class ExperimentalCompatibilityValidator {
                     "advanced_ae",
                     SUPPORTED_ADVANCED_AE_VERSION_PREFIX,
                     SUPPORTED_ADVANCED_AE_VERSION_SUFFIX);
-        }
-        // Wide計画を有効にする時は、受理側と拒否側の両境界Mixinを起動時に証明する。
-        if (ACOConfig.enableAtomicBigCapacityPlans()) {
-            require(failures, "appeng.me.cluster.implementations.CraftingCPUCluster",
-                    BigCapacityPlanBoundaryAccess.class);
         }
         /*
          * Advanced AEのBigInteger提出境界はAtomic long計画とExact計画の双方が使用する。

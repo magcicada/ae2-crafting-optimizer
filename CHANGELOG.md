@@ -4,6 +4,35 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.5.22] - 2026-08-20
+
+### Fixed
+
+- Removed exact BigInteger inventory interception from normal AE2 network
+  storage, storage-service, and crafting-simulation runtime paths.
+- Limited exact inventory snapshots to authoritative BigInteger planning so
+  ordinary terminal insertion, extraction, serials, buses, and watchers remain
+  owned by AE2.
+- Preserved exact `10^64` test-cell amounts for planning while exposing only
+  the existing `Long.MAX_VALUE` compatibility facade to standard AE2 paths.
+- Limited ExtendedAE Plus cache refreshes to cells whose exact ledger was
+  directly changed by ACO.
+
+## [1.5.21] - 2026-08-19
+
+### Fixed
+
+- Isolated the optional BigInteger planning API from ordinary AE2 crafting
+  calculations and CPU submission.
+- Stopped normal long-range jobs from being replaced unless the experimental
+  crafting engine is explicitly enabled.
+- Removed ACO interception of standard AE2 CPU submission; external CPU add-ons
+  retain ownership of capacity checks, submission, execution, and progress.
+- Removed the Forge ME terminal inventory snapshot redirect that could expose
+  stale terminal state during normal insertion and extraction.
+- Made the optimizer master switch disable the BigInteger runtime backend as
+  well as the ordinary optimization features.
+
 ## [1.5.19] - 2026-08-15
 
 ### Added
